@@ -60,34 +60,37 @@ export class SpeechController {
     this.recognition = recognition;
   }
 
+  _mergeTranscripts(current, next) {
+    const a = current.trim();
+    const b = next.trim();
+    if (!a) return b;
+    if (!b) return a;
+    
+    const aLower = a.toLowerCase();
+    const bLower = b.toLowerCase();
+    
+    if (bLower.includes(aLower)) return b;
+    
+    for (let i = Math.min(aLower.length, bLower.length); i > 0; i--) {
+      if (aLower.endsWith(bLower.slice(0, i))) {
+        return a + b.slice(i);
+      }
+    }
+    return a + ' ' + b;
+  }
+
   _handleResult(event) {
-    let currentFinal = '';
-    let currentInterim = '';
+    let text = '';
 
     for (let i = 0; i < event.results.length; i++) {
       const result = event.results[i];
-      const text = result[0].transcript.trim();
-      if (!text) continue;
-
-      if (result.isFinal) {
-        // Evita a duplicação se o Android retornar o texto acumulado em novos resultados
-        if (currentFinal && text.toLowerCase().startsWith(currentFinal.toLowerCase())) {
-          currentFinal = text;
-        } else {
-          currentFinal = currentFinal ? `${currentFinal} ${text}` : text;
-        }
-      } else {
-        // Aplica a mesma proteção contra repetição nos resultados parciais (interim)
-        if (currentInterim && text.toLowerCase().startsWith(currentInterim.toLowerCase())) {
-          currentInterim = text;
-        } else {
-          currentInterim = currentInterim ? `${currentInterim} ${text}` : text;
-        }
-      }
+      const chunk = result[0].transcript.trim();
+      if (!chunk) continue;
+      text = this._mergeTranscripts(text, chunk);
     }
 
-    this.sessionFinal = currentFinal.trim();
-    this.lastInterim = currentInterim.trim();
+    this.sessionFinal = text;
+    this.lastInterim = '';
 
     const full = this.getTranscript();
     if (this.onInterim) this.onInterim(full);
@@ -121,7 +124,13 @@ export class SpeechController {
     }
 
     this.holding = false;
-    if (this.onEnd) this.onEnd(this.getTranscript());
+    const finalTranscript = this.getTranscript();
+    
+    this.accumulatedFinal = '';
+    this.sessionFinal = '';
+    this.lastInterim = '';
+
+    if (this.onEnd) this.onEnd(finalTranscript);
   }
 
   _safeStart() {
@@ -168,7 +177,13 @@ export class SpeechController {
       }
     } else {
       // já tinha terminado sozinho (ex.: gap no iOS) — reporta na hora
-      if (this.onEnd) this.onEnd(this.getTranscript());
+      const finalTranscript = this.getTranscript();
+      if (finalTranscript) {
+        this.accumulatedFinal = '';
+        this.sessionFinal = '';
+        this.lastInterim = '';
+        if (this.onEnd) this.onEnd(finalTranscript);
+      }
     }
   }
 
