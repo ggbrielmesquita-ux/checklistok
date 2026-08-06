@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>Diz aí</title>
+<meta name="description" content="Diz aí — checklist de tarefas do dia a dia por voz.">
+<meta name="theme-color" content="#2f6b4f">
+<meta name="color-scheme" content="light">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Diz aí">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div id="app">
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </span>
+      <h1 class="app-title">Diz aí</h1>
+    </div>
+    <div class="header-meta">
+      <p class="header-counter" id="pendingCounter" aria-live="polite"></p>
+      <div class="header-actions">
+        <button type="button" id="exportBtn" class="icon-btn" aria-label="Exportar tarefas em JSON">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <button type="button" id="importBtn" class="icon-btn" aria-label="Importar tarefas de um arquivo JSON">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </button>
+        <input type="file" id="importFile" accept="application/json" hidden>
+      </div>
+    </div>
+  </header>
+
+  <div id="banner-insecure" class="banner banner-warning" role="alert" hidden></div>
+  <div id="banner-storage" class="banner banner-warning" role="alert" hidden></div>
+
+  <main id="taskList" class="task-list" aria-label="Lista de tarefas"></main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <footer class="composer">
+    <div class="composer-panel">
+      <form id="textForm" class="text-form">
+        <label for="textInput" class="sr-only">Digite uma tarefa</label>
+        <input
+          id="textInput"
+          name="textInput"
+          type="text"
+          placeholder="Digite uma tarefa..."
+          autocomplete="off"
+          autocorrect="off"
+        >
+        <button type="submit" id="sendBtn" class="send-btn" aria-label="Enviar tarefa" disabled>
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </form>
+
+      <button
+        type="button"
+        id="voiceBtn"
+        class="voice-btn"
+        aria-label="Segurar para falar suas tarefas"
+      >
+        <span class="voice-btn-icon-badge" aria-hidden="true">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        </span>
+        <span class="voice-btn-label">Segure para falar</span>
+      </button>
+      <p id="voiceStatus" class="voice-status" aria-live="assertive"></p>
+    </div>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

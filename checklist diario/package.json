@@ -1,0 +1,10 @@
+{
+  "name": "dizai",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Diz aí — checklist de tarefas do dia a dia por voz. Site estático, sem dependências.",
+  "scripts": {
+    "dev": "npx --yes serve . -l 3000",
+    "start": "npx --yes serve . -l 3000"
+  }
+}
