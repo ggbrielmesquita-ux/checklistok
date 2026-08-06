@@ -77,7 +77,12 @@ export class SpeechController {
           currentFinal = currentFinal ? `${currentFinal} ${text}` : text;
         }
       } else {
-        currentInterim = currentInterim ? `${currentInterim} ${text}` : text;
+        // Aplica a mesma proteção contra repetição nos resultados parciais (interim)
+        if (currentInterim && text.toLowerCase().startsWith(currentInterim.toLowerCase())) {
+          currentInterim = text;
+        } else {
+          currentInterim = currentInterim ? `${currentInterim} ${text}` : text;
+        }
       }
     }
 
